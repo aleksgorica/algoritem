@@ -1,0 +1,2 @@
+# algoritem
+Stran za algoritem
