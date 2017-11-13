@@ -1,16 +1,18 @@
 let box1 = [];
 let box2 = [];
 let box01 = [];
+let box01a = [];
 let box02 = [];
+let box02a = [];
 let polje = [[],[]];
-let a = false
+let a = false;
 //***************************************************************
 function setup(){
   createCanvas(640,480);
-
   start();
   $("#gumb").click(function(){
-    razvrsti()});
+    razvrsti()
+  });
   $("#razvrsti").click(function(){
     mix();
       });
@@ -19,6 +21,9 @@ function setup(){
     a = true;
      $(this).attr('disabled','disabled');
         });
+  $("#razporedi").click(function(){
+    razporedi();
+  })
   $("#tobox").click(function(){
     tobox();
     $("#onfield").removeAttr("disabled");
@@ -32,36 +37,55 @@ function draw(){
 }
 
 //**********************************************************
-function Fizol(color){
+function Fizol(color, num){
   this.color = color;
+  this.num = num;
 }
 
 function start(){
-  const wh = prompt("koliko belih");
-  const bl = prompt("koliko crnih");
+  let wh = prompt("koliko belih");
+  let bl = prompt("koliko crnih");
+    box1 = [];
   for(let i = 0; i < wh; i++){
-    let f = new Fizol("white");
+    let f = new Fizol("white", i);
     box1.push(f);
     console.log(box1[i].color);
   }
+  box2 = [];
   for(let i = 0; i < bl; i++){
-    let b = new Fizol("black");
+    let b = new Fizol("black", i + Number(wh));
     box2.push(b);
     console.log(box2[i].color);
   }
 }
 
 function razvrsti(){
-  for(let i = 0; i < floor(box1.length)/2; i++){
-    box01.push(box1[2*i]);
-    box02.push(box1[2*i+1]);
-    }
-box1.splice(0,box1.length);
+  if((box1.length + box2.length) % 2 != 0){
+    start();
+  }
+  box01 = box1.filter(function (value, index, ar) {
+      return (index % 2 == 0);
+  } );
+  box02 = box1.filter(function(value, index, ar) {
+      return ((index + 1) % 2 == 0);
+  });
 
-  for(let i = 0; i < floor(box2.length)/2; i++){
-  box01.push(box2[2*i]);
-  box02.push(box2[2*i+1]);
-}
+  box01a = box2.filter(function(value, index, ar) {
+      return ((index + 1) % 2 == 0);
+  });
+
+  box02a = box2.filter(function(value, index, ar) {
+      return (index % 2 == 0);
+  });
+
+  box01 = box01.concat(box01a);
+  box02 = box02.concat(box02a);
+//    if(box1.length % 2 > 0){
+//      box01.push(box1[length]);
+//    }
+box1.splice(0,box1.length);//if(box2.length%2 != 0){
+//  box02.push(box2[length]);
+//}
 box2.splice(0,box2.length);
   console.log("box01");
   box01.forEach(function(current){
@@ -94,15 +118,35 @@ function onfield(){
   polje[1] = box02;
   box01 = [];
   box02 = [];
-//ne pozabit pri tobox spicat box01 in box02
+}
+
+function razporedi(){
+  let poljef = [[],[]];
+  polje[0].forEach(function(cur,index,arr){
+    if(arr[index].color == polje[1][index].color && cur.color == "white"){
+          poljef[0].push(cur);
+          poljef[1].push(polje[1][index]);
+    }
+  });
+  polje[0].forEach(function(cur,index,arr){
+    if(arr[index].color == polje[1][index].color && cur.color == "black"){
+          poljef[0].push(cur);
+          poljef[1].push(polje[1][index]);
+    }
+  });
+  polje[0].forEach(function(cur,index,arr){
+    if(arr[index].color != polje[1][index].color){
+          poljef[0].push(cur);
+          poljef[1].push(polje[1][index]);
+    }
+  });
+  polje = poljef;
 }
 
 function tobox(){
   for(let i = 0; i < polje[0].length/2; i++){
-  box01.push(polje[0][2*i]);
-  box01.push(polje[1][i*2]);
-  box02.push(polje[0][2*i+1]);
-  box02.push(polje[1][i*2+1]);
+  box01.push(polje[0][2*i], polje[1][2*i]);
+  box02.push(polje[0][2*i+1], polje[1][2*1+1]);
   }
 
   polje[0] = [];
@@ -118,10 +162,14 @@ function display(whatone,whattwo, x1, x2){
     if(whatone[i].color == "white"){
       fill(255);
       ellipse(x,y, 30,20);
+      fill(255,0,0);
+      text(whatone[i].num, x, y, 70,80);
     }
     if(whatone[i].color == "black"){
       fill(0,0,125);
       ellipse(x,y, 30,20);
+      fill(255,0,0);
+      text(whatone[i].num, x, y, 70,80);
     }
     y = y + 30;
   }
@@ -134,10 +182,14 @@ function display(whatone,whattwo, x1, x2){
   if(whattwo[i].color == "white"){
     fill(255);
     ellipse(x,y, 30,20);
+    fill(255,0,0);
+    text(whattwo[i].num, x, y, 70,80);
   }
   if(whattwo[i].color == "black"){
     fill(0,0,125);
     ellipse(x,y, 30,20);
+    fill(255,0,0);
+    text(whattwo[i].num, x, y, 70,80);
   }
   y = y + 30;
 }
