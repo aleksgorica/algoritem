@@ -8,7 +8,7 @@ let polje = [[],[]];
 let a = false;
 //***************************************************************
 function setup(){
-  createCanvas(640,480);
+  createCanvas(windowWidth,windowHeight);
   start();
   $("#gumb").click(function(){
     razvrsti()
@@ -165,41 +165,41 @@ function tobox(){
 function display(whatone,whattwo, x1, x2){
   function nic(whatone,x1){
     let x = x1
-    let y = 10;
+    let y = 5;
   for(let i = 0; i < whatone.length; i++){
     if(whatone[i].color == "white"){
       fill(255);
-      ellipse(x,y, 30,20);
+      ellipse(x,y,10);
       fill(255,0,0);
       text(whatone[i].num, x, y, 70,80);
     }
     if(whatone[i].color == "black"){
       fill(0,0,125);
-      ellipse(x,y, 30,20);
+      ellipse(x,y,10);
       fill(255,0,0);
       text(whatone[i].num, x, y, 70,80);
     }
-    y = y + 30;
+    y = y + 12;
   }
 }
   function ena(whattwo,x2){
     let x = x2;
-    let y = 10;
+    let y = 5;
   for(let i = 0; i < whattwo.length; i++){
 
   if(whattwo[i].color == "white"){
     fill(255);
-    ellipse(x,y, 30,20);
+    ellipse(x,y, 10);
     fill(255,0,0);
     text(whattwo[i].num, x, y, 70,80);
   }
   if(whattwo[i].color == "black"){
     fill(0,0,125);
-    ellipse(x,y, 30,20);
+    ellipse(x,y, 10);
     fill(255,0,0);
     text(whattwo[i].num, x, y, 70,80);
   }
-  y = y + 30;
+  y = y + 12;
 }
 }
 nic(whatone,x1);
