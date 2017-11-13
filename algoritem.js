@@ -146,7 +146,7 @@ function razporedi(){
 function tobox(){
   for(let i = 0; i < polje[0].length/2; i++){
   box01.push(polje[0][2*i], polje[1][2*i]);
-  box02.push(polje[0][2*i+1], polje[1][2*1+1]);
+  box02.push(polje[0][2*i+1], polje[1][2*i+1]);
   }
 
   polje[0] = [];
