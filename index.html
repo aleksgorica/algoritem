@@ -1,18 +1,50 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <script src="p5.js"></script>
+    <link rel="stylesheet" href="normalize.css">
+    <link rel="stylesheet" href="bootstrap.css">
+
+     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+   <script src="p5.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.16/addons/p5.dom.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="bootstrap.js"></script>
+      <link rel="stylesheet" href="style.css">
     <script src="algoritem.js"></script>
   </head>
 <body>
+  <div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1>Genetika</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-7 bg-dark" id="can">  </div>
+    <div class="col-sm-4 gumbi">
+      <div class="zgornji">
+      <div class="row vrsta01">
 
-<input type="button" id="gumb" value="klikni me">
-<input type="button" id="razvrsti" value="razvrsti">
-<input type="button" id="onfield" value="na polje">
-<input type="button" id="razporedi" value="razporedi">
-<input type="button" id="tobox" value="v skatlo">
-  <br>
-  <br>
+      <label for="numpar" class="sp">Število parov:</label>
+          <input type="text" id="numpar" value="">
+          <label for="ratio" class="sp">Določi razmerje:</label> <span id="shratio"></span>
+          <input type="range" id="ratio" name="razmerje" min="0" max="100">
+          <input type="button" id="potrdi" class="btn btn-success btn-block btn-large" value="potrdi">
+        </div>
+
+
+      <div class="row vrsta02">
+        <input type="button" id="gumb" class="btn btn-primary btn-block" name="01"  value="POL POL">
+        <input type="button" id="razvrsti"class="btn btn-primary btn-block" name="02"  value="PREMEŠAJ">
+        <input type="button" id="onfield" class="btn btn-primary btn-block"name="03"  value="NA POLJE">
+        <input type="button" id="razporedi" class="btn btn-primary btn-block"name="04"  value="RAZPOREDI">
+        <input type="button" id="tobox" class="btn btn-primary btn-block" name="05" value="V ŠKATLO"><br>
+      </div>
+    </div>
+      </div>
+    </div>
+  </div>
+    <br>
+    <br>
 </body>
 </html>

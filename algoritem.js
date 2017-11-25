@@ -6,9 +6,26 @@ let box02 = [];
 let box02a = [];
 let polje = [[],[]];
 let a = false;
+let w;
+let h;
+let div;
+
+
+let ctx;
+
 //***************************************************************
+
+
 function setup(){
-  createCanvas(windowWidth,windowHeight);
+  div = select("#can");
+  ctx = createCanvas(300,300);
+  ctx.parent(div);
+  w = div.width;
+  h = div.height;
+  console.log(ctx);
+  resizeCanvas(w,windowHeight);
+
+
   start();
   $("#gumb").click(function(){
     razvrsti()
@@ -28,12 +45,21 @@ function setup(){
     tobox();
     $("#onfield").removeAttr("disabled");
   });
+  let rat = select("#ratio");
+  rat.input(showRatio);
 }
 //**********************************************************************
 function draw(){
-    background(0);
+  ctx.background(0);
   display(box01,box02, 20,width-20);
   display(polje[0],polje[1],width/3,width/3*2);
+}
+
+function windowResized(){
+  div = select("#can");
+  w = div.width;
+  h = div.height;
+  resizeCanvas(w-0.03*windowWidth,windowHeight);
 }
 
 //**********************************************************
@@ -206,4 +232,10 @@ nic(whatone,x1);
 if(whattwo){
   ena(whattwo,x2);
 }
+}
+
+function showRatio(){
+  let val = $("#ratio").val();
+  let val1 = 100-val;
+  $("#shratio").html("belih: " + val + "<br> črnih: " + val1);
 }
