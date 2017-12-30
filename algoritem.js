@@ -95,8 +95,8 @@ function Fizol(color, num) {
   this.movex;
   this.movey;
   this.update = function(){
-    this.movex = (this.newx - this.x)/10;
-    this.movey = (this.newy - this.y)/10;
+    this.movex = (this.newx - this.x)///10;
+    this.movey = (this.newy - this.y)///10;
     this.x += this.movex;
     this.y += this.movey;
   }
