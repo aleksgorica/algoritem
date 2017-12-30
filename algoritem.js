@@ -12,6 +12,7 @@ let polje = [
   [],
   []
 ];
+const rx = 50;
 let a = false;
 let w;
 let h;
@@ -24,7 +25,7 @@ let celota = {
 let redbean;
 let greenbean;
 
-
+let generacija = 0;
 let ctx;
 
 //***************************************************************
@@ -38,13 +39,12 @@ function setup() {
   ctx = createCanvas(300, 300);
   ctx.parent(div);
   w = div.width;
-  h = div.height;
-  console.log(ctx);
-  resizeCanvas(w, windowHeight);
 
 
   $("#potrdi").click(function() {
     potrditev();
+    resizeCanvas(w, rx * celota.vnosParov*5/6);
+
   });
   $("#gumb").click(function() {
     razvrsti()
@@ -70,47 +70,56 @@ function setup() {
 }
 //**********************************************************************
 function draw() {
-  ctx.background(0);
+  ctx.background(33, 45, 56);
   display(box01, box02, 20, width - 20);
   display(polje[0], polje[1], width / 3, width / 3 * 2);
+  //console.log(polje[0][3].x + " " + polje[0][3].y + "\n" + polje[0][3].newx + " "
+  //+ polje[0][3].newy + "\n" + polje[0][3].vector + "\n" + polje[0][3].newvector + "\n" +  polje[0][3].movevector +"\n Številka" +polje[0][3].num);
+
 }
 
 function windowResized() {
   div = select("#can");
   w = div.width;
-  h = div.height;
-  resizeCanvas(w - 0.03 * windowWidth, windowHeight);
+  resizeCanvas(w - 0.03 * windowWidth, 10000);
 }
 
 //**********************************************************
 function Fizol(color, num) {
   this.color = color;
   this.num = num;
+  this.x = 200;
+  this.y = 5;
+  this.newx;
+  this.newy;
+  this.movex;
+  this.movey;
+  this.update = function(){
+    this.movex = (this.newx - this.x)/10;
+    this.movey = (this.newy - this.y)/10;
+    this.x += this.movex;
+    this.y += this.movey;
+  }
+
+
 }
 
 function start() {
   box1 = [];
   let wh = round(Number(celota.vnosBelih) * 2 * 0.01 * Number(celota.vnosParov));
   let bl = round(Number(celota.vnosČrnih) * 2 * 0.01 * Number(celota.vnosParov));
-  console.log(celota.vnosBelih + "  " + celota.vnosČrnih + "  " + celota.vnosParov);
-  console.log(wh + " " + bl);
   for (let i = 0; i < wh; i++) {
     let f = new Fizol("white", i);
     box1.push(f);
-    console.log(box1[i].color);
   }
   box2 = [];
   for (let i = 0; i < bl; i++) {
     let b = new Fizol("black", i + Number(wh));
     box2.push(b);
-    console.log(box2[i].color);
   }
 }
 
 function razvrsti() {
-  if ((box1.length + box2.length) % 2 != 0) {
-    start();
-  }
   box01 = box1.filter(function(value, index, ar) {
     return (index % 2 == 0);
   });
@@ -135,13 +144,9 @@ function razvrsti() {
   //  box02.push(box2[length]);
   //}
   box2.splice(0, box2.length);
-  console.log("box01");
   box01.forEach(function(current) {
-    console.log(current.color);
   });
-  console.log("box02");
   box02.forEach(function(currentb) {
-    console.log(currentb.color);
   });
 }
 
@@ -155,9 +160,7 @@ function mix() {
 
   shuffleArray(box01);
   shuffleArray(box02);
-  console.log("zacetek");
   box01.forEach(function(cur) {
-    console.log(cur.color);
   });
 }
 
@@ -167,7 +170,6 @@ function onfield() {
   box01 = [];
   box02 = [];
 }
-
 function razporedi() {
   let poljef = [
     [],
@@ -192,6 +194,8 @@ function razporedi() {
     }
   });
   polje = poljef;
+  vrniSteviloKombinacij();
+
 }
 
 function tobox() {
@@ -214,52 +218,71 @@ function tobox() {
 
   polje[0] = [];
   polje[1] = [];
-  console.log("tobox deluje");
 }
 
 function display(whatone, whattwo, x1, x2) {
-  let rx = 50;
+
   let ry = rx / 3 * 2;
   function nic(whatone, x1) {
     let x = x1
     let y = 5;
     for (let i = 0; i < whatone.length; i++) {
+      whatone[i].newx = x;
+      whatone[i].newy = y;
+      whatone[i].update();
       if (whatone[i].color == "white") {
         fill(255);
-        image(redbean, x, y, rx, ry);
+        image(redbean, whatone[i].x, whatone[i].y, rx, ry);
         fill(255, 0, 0);
-        text(whatone[i].num, x, y, 70, 80);
+        text(whatone[i].num, whatone[i].x, whatone[i].y, 70, 80);
       }
       if (whatone[i].color == "black") {
         fill(0, 0, 125);
-        image(greenbean, x, y,rx,ry);
+        image(greenbean, whatone[i].x, whatone[i].y,rx,ry);
         fill(255, 0, 0);
-        text(whatone[i].num, x, y, 70, 80);
+        text(whatone[i].num, whatone[i].x, whatone[i].y, 70, 80);
       }
+      stroke(255);
+
+      line(0,y,width,y);
       y = y + rx / 2 * 1.5;
+      if(y > height){       // Če nočeš da gre v novo vrsto zbriši ta if blok
+        x = x + rx;
+        y = 5;
+      }
     }
+
   }
 
   function ena(whattwo, x2) {
     let x = x2;
     let y = 5;
     for (let i = 0; i < whattwo.length; i++) {
-
+      whattwo[i].newx = x;
+      whattwo[i].newy = y;
+      whattwo[i].update();
       if (whattwo[i].color == "white") {
         fill(255);
-        image(redbean,x,y,rx,ry);
+        image(redbean,whattwo[i].x-rx,whattwo[i].y,rx,ry);
         fill(255, 0, 0);
-        text(whattwo[i].num, x, y, 70, 80);
+        text(whattwo[i].num, whattwo[i].x, whattwo[i].y, 70, 80);
       }
       if (whattwo[i].color == "black") {
         fill(0, 0, 125);
-        image(greenbean,x,y,rx,ry);
+        image(greenbean,whattwo[i].x-rx,whattwo[i].y,rx,ry);
         fill(255, 0, 0);
-        text(whattwo[i].num, x, y, 70, 80);
+        text(whattwo[i].num, whattwo[i].x, whattwo[i].y, 70, 80);
       }
       y = y + rx/2 * 1.5;
+      if(y > height){       // Če nočeš da gre v novo vrsto zbriši ta if blok
+        x = x - rx;
+        y = 5;
+      }
+
     }
   }
+
+
   nic(whatone, x1);
   if (whattwo) {
     ena(whattwo, x2);
@@ -275,8 +298,7 @@ function showRatio() {
     }
   }
   $("#shratio").html("belih: " + skupniRezultati.value0 + "<br> črnih: " + skupniRezultati.value1);
-  console.log(skupniRezultati.value0);
-  console.log(celota.vnosČrnih);
+
   return skupniRezultati;
 }
 
@@ -286,13 +308,53 @@ function potrditev() {
   celota.vnosBelih = temcelota.value0;
   celota.vnosČrnih = temcelota.value1;
   celota.vnosParov = temcelota.vnosParov;
-  console.log(celota + "To je celota");
-  console.log(celota.vnosBelih);
-  console.log(celota.vnosČrnih + "to je vnos črnih");
   start();
   box01 = []; //Resetiramo, tako da odstranimo vse array-je
   box02 = [];
-  box01a = [];
+  box01a = [];[[],[]];
   box02a = [];
+  polje = [[],[]];
+  logiraj();
+}
+
+function logiraj(){
+  $(".spodnji").html(`<span>Število rdečih:</span> ${round(2*(celota.vnosParov/100 * celota.vnosBelih))}
+ <br>
+  <span>Število zelenih:</span> ${round(2*(celota.vnosParov/100 * celota.vnosČrnih))}
+  <br>
+  <span>Matematična verjetnost - RDEČ RDEČ: ${(celota.vnosBelih*celota.vnosBelih*celota.vnosParov/10000)}</span>
+  <br>
+  <span>Matematična verjetnost - RDEČ ZELEN: ${(celota.vnosBelih*celota.vnosČrnih*2*celota.vnosParov/10000)} </span>
+  <br>
+  <span>Matematična verjetnost - ZELEN ZELEN: ${(celota.vnosČrnih*celota.vnosČrnih*celota.vnosParov/10000)  }</span>
+  <br>
+  <span>Število vseh fižolov: ${celota.vnosParov*2}</span>
+  <br>
+  <span>p = ${celota.vnosBelih/100}; q = ${celota.vnosČrnih/100}</span>
+  <br>
+
+
+  `);
+}
+
+function vrniSteviloKombinacij(){
+  let rdrd = 0;
+  let rdzl = 0;
+  let zlzl = 0;
+  for(let i = 0; i < polje[0].length; i++){
+    console.log(polje[0][i].color == polje[1][i].color && polje[0].color == "black");
+    if(polje[0][i].color == polje[1][i].color && polje[0][i].color == "white"){
+      rdrd += 1;
+
+    } else if(polje[0][i].color == polje[1][i].color && polje[0][i].color == "black"){
+      zlzl += 1;
+    } else {
+      rdzl += 1;
+    }
+
+  }
+  $(".spodnji").append(`<span>Realno RDEČ RDEČ ${rdrd}</span><br/>
+    <span>Realno RDEČ ZELEN ${rdzl}</span><br/>
+    <span>Realno ZELEN ZELEN ${zlzl}</span><br/>`);
 
 }
