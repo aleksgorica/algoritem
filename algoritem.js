@@ -5,9 +5,7 @@
 let box1 = [];
 let box2 = [];
 let box01 = [];
-let box01a = [];
 let box02 = [];
-let box02a = [];
 let polje = [
   [],
   []
@@ -120,6 +118,8 @@ function start() {
 }
 
 function razvrsti() {
+  let box01a = [];
+  let box02a = [];
   box01 = box1.filter(function(value, index, ar) {
     return (index % 2 == 0);
   });
@@ -144,10 +144,7 @@ function razvrsti() {
   //  box02.push(box2[length]);
   //}
   box2.splice(0, box2.length);
-  box01.forEach(function(current) {
-  });
-  box02.forEach(function(currentb) {
-  });
+
 }
 
 function mix() {
