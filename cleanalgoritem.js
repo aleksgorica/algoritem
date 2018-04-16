@@ -1,4 +1,4 @@
-let boxes = {
+﻿let boxes = {
   box1: [], //opisuje koliko je belih na začetku v škatli1
   box2: [], //opisuje koliko je črnih na začetku v škatli2
   box01: [], //v drugem koraku, prvi kozarec, v katerega damo pol belih, pol črnih
@@ -8,7 +8,11 @@ let boxes = {
     []
   ], //fižoli ko so na polju
   meshBox1: [],
-  meshBox2: []
+  meshBox01: [],
+  meshBox2: [],
+  meshBox02: [],
+  meshPolje1: [],
+  meshPolje2: []
 };
 
 let kolicina = { //tej spremenjlivki določi vrednost z inputi
@@ -21,10 +25,11 @@ var geometry, material;
 
 document.getElementById('potrdi').onclick = function() {
   potrditev()
+  logiraj()
 };
-document.getElementById('polpol').onclick = function() {
-  start()
-};
+// document.getElementById('polpol').onclick = function() {
+//   start()
+// };
 document.getElementById('razvrsti').onclick = function() {
   razvrsti()
 };
@@ -40,6 +45,9 @@ document.getElementById('razporedi').onclick = function() {
 document.getElementById('tobox').onclick = function() {
   tobox()
 };
+document.getElementById('ratio').onchange = function(){
+  showRatio();
+}
 
 
 
@@ -108,28 +116,57 @@ function razvrsti() { //pol fižolov ene barve na eno stran, pol fižolov na dru
 
   boxes.box1.splice(0, boxes.box1.length); //if(box2.length%2 != 0){
   boxes.box2.splice(0, boxes.box2.length);
-  console.log("nekaj se je izvedlo");
-  console.log(boxes.box01);
-  console.log(boxes.box02)
+
+  //Ponovi vse za meshBoxe
+
+  let meshBox01a = []; //ustvari lokalno spremenljivko, ki pomaga
+  let meshBox02a = [];
+
+  boxes.meshBox01 = boxes.meshBox1.filter(function(value, index, ar) {
+    return (index % 2 == 0);
+  });
+  boxes.meshBox02 = boxes.meshBox1.filter(function(value, index, ar) {
+    return ((index + 1) % 2 == 0);
+  });
+
+  meshBox01a = boxes.meshBox2.filter(function(value, index, ar) {
+    return ((index + 1) % 2 == 0);
+  });
+
+  meshBox02a = boxes.meshBox2.filter(function(value, index, ar) {
+    return (index % 2 == 0);
+  });
+
+  boxes.meshBox01 = boxes.meshBox01.concat(meshBox01a);
+  boxes.meshBox02 = boxes.meshBox02.concat(meshBox02a);
+
+  boxes.meshBox1.splice(0, boxes.meshBox1.length); //if(box2.length%2 != 0){
+  boxes.meshBox2 = [];
+  // boxes.meshbox2.splice(0, boxes.meshBox2.length);
 }
 
 function mix() { //random premešaj
-  function shuffleArray(array) { //
-    for (let i = array.length - 1; i > 0; i--) {
+  function shuffleArray(array1, array2) { //
+    for (let i = array1.length - 1; i > 0; i--) {
       let j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+      [array1[i], array1[j]] = [array1[j], array1[i]];
+      [array2[i], array2[j]] = [array2[j], array2[i]];
     }
   }
 
-  shuffleArray(boxes.box01);
-  shuffleArray(boxes.box02);
+  shuffleArray(boxes.box01, boxes.meshBox01);
+  shuffleArray(boxes.box02, boxes.meshBox02);
 }
 
 function onfield() { //premakne fižole na polje
   boxes.polje[0] = boxes.box01;
   boxes.polje[1] = boxes.box02;
+  boxes.meshPolje1 = boxes.meshBox01;
+  boxes.meshPolje2 = boxes.meshBox02;
   boxes.box01 = [];
   boxes.box02 = [];
+  boxes.meshBox01 = [];
+  boxes.meshBox02= [];
 }
 
 function razporedi() { //razvrsti fižole po barvah
@@ -137,25 +174,40 @@ function razporedi() { //razvrsti fižole po barvah
     [],
     []
   ];
+  let meshPoljef = [
+    [],
+    []
+  ];
   boxes.polje[0].forEach(function(cur, index, arr) {
     if (arr[index].color == boxes.polje[1][index].color && cur.color == "white") {
-      poljef[0].push(cur);
+      poljef[0].push(boxes.polje[0][index]);
       poljef[1].push(boxes.polje[1][index]);
+      meshPoljef[0].push(boxes.meshPolje1[index]);
+      meshPoljef[1].push(boxes.meshPolje2[index]);
     }
   });
   boxes.polje[0].forEach(function(cur, index, arr) {
     if (arr[index].color == boxes.polje[1][index].color && cur.color == "black") {
-      poljef[0].push(cur);
+      poljef[0].push(boxes.polje[0][index]);
       poljef[1].push(boxes.polje[1][index]);
+      meshPoljef[0].push(boxes.meshPolje1[index]);
+      meshPoljef[1].push(boxes.meshPolje2[index]);
     }
   });
   boxes.polje[0].forEach(function(cur, index, arr) {
     if (arr[index].color != boxes.polje[1][index].color) {
-      poljef[0].push(cur);
+      poljef[0].push(boxes.polje[0][index]);
       poljef[1].push(boxes.polje[1][index]);
+      meshPoljef[0].push(boxes.meshPolje1[index]);
+      meshPoljef[1].push(boxes.meshPolje2[index]);
     }
   });
+
+
   boxes.polje = poljef;
+  boxes.meshPolje1 = meshPoljef[0];
+  boxes.meshPolje2 = meshPoljef[1];
+  console.log(boxes);
   vrniSteviloKombinacij();
 }
 
@@ -163,74 +215,47 @@ function tobox() { //spravi nazaj v škatle
   for (let i = 0; i < boxes.polje[0].length; i++) {
     boxes.box01.push(boxes.polje[0][2 * i], boxes.polje[1][2 * i]);
     boxes.box02.push(boxes.polje[0][2 * i + 1], boxes.polje[1][2 * i + 1]);
+    boxes.meshBox01.push(boxes.meshPolje1[2 * i], boxes.meshPolje2[2 * i]);
+    boxes.meshBox02.push(boxes.meshPolje1[2 * i + 1], boxes.meshPolje2[2 * i + 1]);
   }
+
   boxes.box01 = boxes.box01.filter(function(e) {
-    return e;
-  });
-  boxes.box02 = boxes.box02.filter(function(e) {
-    return e;
-  });
+  return e;
+});
+boxes.box02 = boxes.box02.filter(function(e) {
+  return e;
+});
+boxes.meshBox01 = boxes.meshBox01.filter(function(e) {
+return e;
+});
+boxes.meshBox02 = boxes.meshBox02.filter(function(e) {
+return e;
+});
+
   if (boxes.polje[0].length % 2 != 0) {
     boxes.box01.pop();
     boxes.box01.pop();
+    boxes.meshBox01.pop();
+    boxes.meshBox01.pop();
     boxes.box01.push(boxes.polje[0][boxes.polje[0].length - 1]);
     boxes.box02.push(boxes.polje[1][boxes.polje[0].length - 1]);
+    boxes.meshBox01.push(boxes.meshPolje1[boxes.meshPolje1.length - 1]);
+    boxes.meshBox02.push(boxes.meshPolje2[boxes.meshPolje1.length - 1]);
   }
+
 
   boxes.polje[0] = [];
   boxes.polje[1] = [];
+  boxes.meshPolje1 = [];
+  boxes.meshPolje2 = [];
 }
+
+
 
 //funkcija prikaže vse na canvasu
 //whatone = prvi array, whattwo = drugi array
 //x1 = nova x pozicija; x2 = nova x pozicija za drugi array
-// function display(whatone, whattwo, x1, x2) {
-//   function nic(whatone, x1) {
-//     let x = x1;
-//     let y = 0;
-//     for (let i = 0; i < whatone.length; i++) {
-//       whatone[i].newx = x;
-//       whatone[i].newy = y;
-//       whatone[i].update();
-//       if (whatone[i].color == "white") {
-//         const mesh = new THREE.Mesh(geometry, greenmaterial);
-//         scene.add(mesh);
-//         mesh.position.set(x, y, 0);
-//       }
-//       if (whatone[i].color == "black") {
-//         const mesh = new THREE.Mesh(geometry, redmaterial);
-//         scene.add(mesh);
-//         mesh.position.set(x, y, 0);
-//       }
-//       y += 1;
-//     }
-//   }
-//
-//   function ena(whattwo, x2) {
-//     let x = x2;
-//     let y = 0;
-//     for (let i = 0; i < whattwo.length; i++) {
-//       whattwo[i].newx = x;
-//       whattwo[i].newy = y;
-//       whattwo[i].update();
-//       if (whattwo.color == "white") {
-//         const mesh = new THREE.Mesh(geometry, greenmaterial);
-//         scene.add(mesh);
-//         mesh.position.set(x, y, 0);
-//       }
-//       if (whattwo[i].color == "black") {
-//         const mesh = new THREE.Mesh(geometry, redmaterial);
-//         scene.add(mesh);
-//         mesh.position.set(x, y, 0);
-//       }
-//       y = y + 1;
-//     }
-//   }
-//   nic(whatone, x1);
-//   if (whattwo) {
-//     ena(whattwo, x2);
-//   }
-// }
+
 
 function showRatio() {
   let skupniRezultati = {
@@ -239,9 +264,48 @@ function showRatio() {
     get value1() {
       return 100 - this.value0;
     }
-  }
+}
   document.getElementById("shratio").innerHTML = "belih: " + skupniRezultati.value0 + "<br> črnih: " + skupniRezultati.value1;
   return skupniRezultati;
+}
+
+function vrniSteviloKombinacij(){
+let rdrd = 0;
+let rdzl = 0;
+let zlzl = 0;
+for(let i = 0; i < boxes.polje[0].length; i++){
+  console.log(boxes.polje[0][i].color == boxes.polje[1][i].color && boxes.polje[0].color == "black");
+  if(boxes.polje[0][i].color == boxes.polje[1][i].color && boxes.polje[0][i].color == "white"){
+    rdrd += 1;
+
+  } else if(boxes.polje[0][i].color == boxes.polje[1][i].color && boxes.polje[0][i].color == "black"){
+    zlzl += 1;
+  } else {
+    rdzl += 1;
+  }
+
+}
+document.getElementById("logger").innerHTML += `<span>Realno RDEČ RDEČ ${rdrd}</span><br/>
+  <span>Realno RDEČ ZELEN ${rdzl}</span><br/>
+  <span>Realno ZELEN ZELEN ${zlzl}</span><br/>`;
+
+}
+function logiraj(){
+  document.getElementById("logger").innerHTML = `<span>Število rdečih:</span> ${Math.round(2*(kolicina.vnosParov/100 * kolicina.vnosBelih))}
+ <br>
+  <span>Število zelenih:</span> ${Math.round(2*(kolicina.vnosParov/100 * kolicina.vnosČrnih))}
+  <br>
+  <span>Matematična verjetnost - RDEČ RDEČ: ${(kolicina.vnosBelih*kolicina.vnosBelih*kolicina.vnosParov/10000)}</span>
+  <br>
+  <span>Matematična verjetnost - RDEČ ZELEN: ${(kolicina.vnosBelih*kolicina.vnosČrnih*2*kolicina.vnosParov/10000)} </span>
+  <br>
+  <span>Matematična verjetnost - ZELEN ZELEN: ${(kolicina.vnosČrnih*kolicina.vnosČrnih*kolicina.vnosParov/10000)  }</span>
+  <br>
+  <span>Število vseh fižolov: ${kolicina.vnosParov*2}</span>
+  <br>
+  <span>p = ${kolicina.vnosBelih/100}; q = ${kolicina.vnosČrnih/100}</span>
+  <br>
+  `;
 }
 
 function potrditev() {
@@ -256,31 +320,43 @@ function potrditev() {
     [],
     []
   ];
+  boxes.meshBox01 = []; //Resetiramo, tako da odstranimo vse array-je
+  boxes.meshBox02 = [];
+  boxes.meshPolje1 = [];
+  boxes.meshPolje2 = [];
 }
 let controls;
 
 function init() {
 
-  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
+  camera = new THREE.PerspectiveCamera(70, 0.66 * window.innerWidth / window.innerHeight, 0.01, 10);
   camera.position.z = 5;
 
   scene = new THREE.Scene();
   controls = new THREE.OrbitControls(camera);
 
-  var light = new THREE.PointLight(0xFFFF00);
-  light.position.set(10, 0, 25);
-  scene.add(light);
+  var light1 = new THREE.PointLight(0xFFFF00);
+  var light2 = new THREE.PointLight(0xFFFF00);
+  light1.position.set(10, 0, 25);
+  scene.add(light1);
+  light2.position.set(-10, 0, -25);
+  scene.add(light2);
   geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
   const redmaterial = new THREE.MeshNormalMaterial({
     color: 0x135fd8
   });
-
+  window.addEventListener('resize', function () {
+    renderer.setSize(window.innerWidth*0.66, window.innerHeight);
+    camera.aspect = window.innerWidth*0.66, window.innerHeight;
+    camera.updateProjectionMatrix();
+  });
   const greenmaterial = new THREE.MeshLambertMaterial({
     color: 0xfd59d7
   });
 
   const xgreen = -1;
   const xred = 1;
+  const ypremik = -0.3;
   let ygreen = 0;
   let yred = 0;
   for (let i = 0; i < boxes.box1.length; i++) {
@@ -288,14 +364,14 @@ function init() {
     boxes.meshBox1.push(mesh);
     scene.add(mesh);
     mesh.position.set(xgreen, ygreen, 0);
-    ygreen += 0.3;
+    ygreen += ypremik;
   }
   for (let i = 0; i < boxes.box2.length; i++) {
     const mesh = new THREE.Mesh(geometry, redmaterial);
     boxes.meshBox2.push(mesh);
     scene.add(mesh);
     mesh.position.set(xred, yred, 0);
-    yred += 0.3;
+    yred += ypremik;
   }
 
   controls.update();
@@ -304,12 +380,44 @@ function init() {
   renderer = new THREE.WebGLRenderer({
     antialias: true
   });
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(window.innerWidth*0.66, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
 }
-
+function display(whatone, whattwo, whatMeshOne, whatMeshTwo, x1, x2) {
+  const ry = 0.5;
+  function nic(whatone,whatMeshOne, x1) {
+    let x = x1
+    let y = 0;
+    for (let i = 0; i < whatone.length; i++) {
+      whatone[i].newx = x;
+      whatone[i].newy = y;
+      whatMeshOne[i].position.x = whatone[i].x;
+      whatMeshOne[i].position.y = whatone[i].y;
+      whatone[i].update();
+      y += ry;
+    }
+  }
+  function ena(whattwo, whatMeshTwo, x2) {
+    let x = x2;
+    let y = 0;
+    for (let i = 0; i < whattwo.length; i++) {
+      whattwo[i].newx = x;
+      whattwo[i].newy = y;
+      whattwo[i].update();
+      whatMeshTwo[i].position.x = whattwo[i].x;
+      whatMeshTwo[i].position.y = whattwo[i].y;
+      y = y + ry
+    }
+  }
+  nic(whatone, whatMeshOne, x1);
+  if (whattwo) {
+    ena(whattwo, whatMeshTwo, x2);
+  }
+}
 function animate() {
+  display(boxes.box01, boxes.box02, boxes.meshBox01, boxes.meshBox02, -3, 3);
+  display(boxes.polje[0], boxes.polje[1], boxes.meshPolje1, boxes.meshPolje2, -1, 1);
 
   requestAnimationFrame(animate);
 
