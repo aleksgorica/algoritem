@@ -285,9 +285,10 @@ function vrniSteviloKombinacij() {
     }
 
   }
-  document.getElementById("logger").innerHTML += `<span>Realno RDEČ RDEČ ${rdrd}</span><br/>
-  <span>Realno RDEČ ZELEN ${rdzl}</span><br/>
-  <span>Realno ZELEN ZELEN ${zlzl}</span><br/>`;
+  document.getElementById("tabela").innerHTML += `
+  <td>${rdrd}</td>
+  <td>${rdzl}</td>
+  <td>${zlzl}</td>`;
 
 }
 
@@ -306,6 +307,14 @@ function logiraj() {
   <br>
   <span>p = ${kolicina.vnosBelih/100}; q = ${kolicina.vnosČrnih/100}</span>
   <br>
+     <table style="width:100%" id="tabela">
+  <tr>
+    <th>RDEČ RDEČ</th>
+    <th>RDEČ ZELEN
+    <th>ZELEN ZELENS</th>
+  </tr>
+
+</table> 
   `;
 }
 
