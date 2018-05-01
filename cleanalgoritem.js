@@ -448,7 +448,7 @@ loader.load( 'helvetiker_regular.typeface.json', function ( font ) {
 
 
   var renderer = new THREE.WebGLRenderer();
-  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.setSize( window.innerWidth * 0.66, window.innerHeight );
   document.body.appendChild( renderer.domElement );
 
   renderer.render( scene, camera );
