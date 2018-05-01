@@ -1,4 +1,7 @@
+let generacija = 0;
+let pretekleMeritve = [];
 
+let srednjeVrednosti = {};
 let boxes = {
   box1: [], //opisuje koliko je belih na začetku v škatli1
   box2: [], //opisuje koliko je črnih na začetku v škatli2
@@ -24,27 +27,39 @@ let kolicina = { //tej spremenjlivki določi vrednost z inputi
 var camera, scene, renderer;
 var geometry, material;
 
-document.getElementById('potrdi').onclick = function() {
-  potrditev()
-  logiraj()
+const button_potrdi = document.getElementById("potrdi");
+const button_premesaj = document.getElementById("premešaj");
+const button_onfield = document.getElementById("onfield");
+const button_razporedi = document.getElementById("razporedi");
+const button_tobox = document.getElementById("tobox");
+button_potrdi.onclick = function() {
+  potrditev();
+  logiraj();
+  razvrsti();
+  button_razporedi.disabled = true;
+  button_tobox.disabled = true;
 };
 // document.getElementById('polpol').onclick = function() {
 //   start()
 // };
-document.getElementById('razvrsti').onclick = function() {
-  razvrsti()
+button_premesaj.onclick = function() {
+  mix();
+    button_razporedi.disabled = true;
+  button_tobox.disabled = true;
+
 };
-document.getElementById('premešaj').onclick = function() {
-  mix()
+button_onfield.onclick = function() {
+  onfield();
+  button_premesaj.disabled = true;
+  button_razporedi.disabled = false;
+  button_tobox.disabled = false;
 };
-document.getElementById('onfield').onclick = function() {
-  onfield()
-};
-document.getElementById('razporedi').onclick = function() {
+button_razporedi.onclick = function() {
   razporedi()
 };
-document.getElementById('tobox').onclick = function() {
+button_tobox.onclick = function() {
   tobox()
+  button_premesaj.disabled = false;
 };
 document.getElementById('ratio').onchange = function() {
   showRatio();
@@ -76,6 +91,7 @@ class Fizol { //objekt fižola
 function start() { //inicializacija
   boxes.box1 = []; //izprazni box1 in box2
   boxes.box2 = [];
+
   //število belih in črnih fižolov
   let numWhite = Math.round(Number(kolicina.vnosBelih) * 2 * 0.01 * Number(kolicina.vnosParov));
   let numBlack = Math.round(Number(kolicina.vnosČrnih) * 2 * 0.01 * Number(kolicina.vnosParov));
@@ -89,6 +105,7 @@ function start() { //inicializacija
   }
   console.log(boxes.box1);
   console.log(boxes.box2);
+  document.getElementById("besedilo").innerHTML = "";
   init();
   animate();
 }
@@ -171,6 +188,7 @@ function onfield() { //premakne fižole na polje
 }
 
 function razporedi() { //razvrsti fižole po barvah
+  generacija++;
   let poljef = [ //nov array pomaga razvrstiti po barvah, kasneje ga združimo
     [],
     []
@@ -209,6 +227,7 @@ function razporedi() { //razvrsti fižole po barvah
   boxes.meshPolje1 = meshPoljef[0];
   boxes.meshPolje2 = meshPoljef[1];
   console.log(boxes);
+  povprecje();
   vrniSteviloKombinacij();
 }
 
@@ -256,7 +275,46 @@ function tobox() { //spravi nazaj v škatle
 //funkcija prikaže vse na canvasu
 //whatone = prvi array, whattwo = drugi array
 //x1 = nova x pozicija; x2 = nova x pozicija za drugi array
+function povprecje(){
+  let rdrd = 0;
+  let rdzl = 0;
+  let zlzl = 0;
+  for (let i = 0; i < boxes.polje[0].length; i++) {
+    if (boxes.polje[0][i].color == boxes.polje[1][i].color && boxes.polje[0][i].color == "white") {
+      rdrd += 1;
 
+    } else if (boxes.polje[0][i].color == boxes.polje[1][i].color && boxes.polje[0][i].color == "black") {
+      zlzl += 1;
+    } else {
+      rdzl += 1;
+    }
+
+  }
+  pretekleMeritve.push({
+    rdrd,
+    rdzl,
+    zlzl
+  });
+
+ let vsi_rdec_rdec = 0;
+  let vsi_rdec_zelen = 0;
+  let vsi_zelen_zelen = 0;
+  for(let i = 0; i < pretekleMeritve.length; i++){
+    vsi_rdec_rdec += pretekleMeritve[i].rdrd;
+    vsi_rdec_zelen += pretekleMeritve[i].rdzl;
+    vsi_zelen_zelen += pretekleMeritve[i].zlzl;
+
+  }
+  srednjeVrednosti = {
+    rdec_rdec: Math.round((vsi_rdec_rdec / pretekleMeritve.length) * 1000)/1000,
+    rdec_zelen: Math.round((vsi_rdec_zelen / pretekleMeritve.length)*1000)/1000,
+    zelen_zelen: Math.round((vsi_zelen_zelen / pretekleMeritve.length)* 1000)/1000
+  };
+  document.getElementById("povprecje").innerHTML = ` <td>Povprečna vrednost</td>
+  <td>${srednjeVrednosti.rdec_rdec}</td>
+  <td>${srednjeVrednosti.rdec_zelen}</td>
+  <td>${srednjeVrednosti.zelen_zelen}</td>`
+}
 
 function showRatio() {
   let skupniRezultati = {
@@ -266,8 +324,8 @@ function showRatio() {
       return 100 - this.value0;
     }
   }
-  document.getElementById("shratio").innerHTML = "belih: " + skupniRezultati.value0 + "<br> črnih: " + skupniRezultati.value1;
-  return skupniRezultati;
+  document.getElementById("shratio").innerHTML = '<span class="rdec">rdeči: ' + skupniRezultati.value0 + '%</span><br><span class="blue"> modri: ' + skupniRezultati.value1 + "%";
+    return skupniRezultati;
 }
 
 function vrniSteviloKombinacij() {
@@ -286,6 +344,7 @@ function vrniSteviloKombinacij() {
 
   }
   document.getElementById("tabela").innerHTML += `
+  <td> F${generacija} </td>
   <td>${rdrd}</td>
   <td>${rdzl}</td>
   <td>${zlzl}</td>`;
@@ -293,26 +352,32 @@ function vrniSteviloKombinacij() {
 }
 
 function logiraj() {
-  document.getElementById("logger").innerHTML = `<span>Število rdečih:</span> ${Math.round(2*(kolicina.vnosParov/100 * kolicina.vnosBelih))}
+  const logger = document.getElementById("logger");
+  logger.style.display = "block";
+  logger.innerHTML = `<span class="rdec">Število rdečih:</span> ${Math.round(2*(kolicina.vnosParov/100 * kolicina.vnosBelih))}
  <br>
-  <span>Število zelenih:</span> ${Math.round(2*(kolicina.vnosParov/100 * kolicina.vnosČrnih))}
-  <br>
-  <span>Matematična verjetnost - RDEČ RDEČ: ${(kolicina.vnosBelih*kolicina.vnosBelih*kolicina.vnosParov/10000)}</span>
-  <br>
-  <span>Matematična verjetnost - RDEČ ZELEN: ${(kolicina.vnosBelih*kolicina.vnosČrnih*2*kolicina.vnosParov/10000)} </span>
-  <br>
-  <span>Matematična verjetnost - ZELEN ZELEN: ${(kolicina.vnosČrnih*kolicina.vnosČrnih*kolicina.vnosParov/10000)  }</span>
+  <span class="blue">Število modrih:</span> ${Math.round(2*(kolicina.vnosParov/100 * kolicina.vnosČrnih))}
   <br>
   <span>Število vseh fižolov: ${kolicina.vnosParov*2}</span>
   <br>
-  <span>p = ${kolicina.vnosBelih/100}; q = ${kolicina.vnosČrnih/100}</span>
+  <span class="rdec">p = </span>${kolicina.vnosBelih/100}; <span class="blue">q =</span> ${kolicina.vnosČrnih/100}
   <br>
      <table style="width:100%" id="tabela">
   <tr>
-    <th>RDEČ RDEČ</th>
-    <th>RDEČ ZELEN
-    <th>ZELEN ZELENS</th>
+    <th></th>
+    <th><span class="rdec">RD - RD</span></th>
+    <th><span class="rdec">RD</span> - <span class="blue">MD</span></th>
+    <th><span class="blue">MD - MD </span></th>
   </tr>
+  <tr>
+    <td>Matematično\npričakovano</td>
+    <td>${(kolicina.vnosBelih*kolicina.vnosBelih*kolicina.vnosParov/10000)}</td>
+    <td> ${(kolicina.vnosBelih*kolicina.vnosČrnih*2*kolicina.vnosParov/10000)}</td>
+    <td>${(kolicina.vnosČrnih*kolicina.vnosČrnih*kolicina.vnosParov/10000)  }</td>
+  </tr>
+  <tr id="povprecje">
+ 
+</tr>
 
 </table> 
   `;
@@ -347,6 +412,55 @@ function init() {
 
   var light1 = new THREE.PointLight(0xFFFF00);
   var light2 = new THREE.PointLight(0xFFFF00);
+var loader = new THREE.FontLoader();
+
+loader.load( 'helvetiker_regular.typeface.json', function ( font ) {
+
+  var material = new THREE.MeshPhongMaterial( { color: 0x0033ff, specular: 0x555555, shininess: 30 } );
+
+  var geometry_1 = new THREE.TextGeometry( 'MEN', {
+        font: font,
+    size: 0.4,
+    height: 0.1,
+    curveSegments: 12,
+  
+  } );
+  var geometry_2 = new THREE.TextGeometry( 'WOMEN', {
+        font: font,
+    size: 0.4,
+    height: 0.1,
+    curveSegments: 12,
+  
+  } );
+
+
+  var mesh_1 = new THREE.Mesh( geometry_1, material );
+  var mesh_2 = new THREE.Mesh( geometry_2, material );
+  mesh_1.position.set(-3, 0, 0);
+  mesh_2.position.set(2, 0, 0);
+
+
+  scene.add(mesh_1, mesh_2);
+
+  var light = new THREE.DirectionalLight( 0xffffff );
+  light.position.set( 0, 1, 1 ).normalize();
+  scene.add(light);
+
+
+  var renderer = new THREE.WebGLRenderer();
+  renderer.setSize( window.innerWidth, window.innerHeight );
+  document.body.appendChild( renderer.domElement );
+
+  renderer.render( scene, camera );
+  function animate(){
+    requestAnimationFrame(animate);
+
+    controls.update();
+  renderer.render( scene, camera );
+}
+
+animate();
+} );
   light1.position.set(10, 0, 25);
   scene.add(light1);
   light2.position.set(-10, 0, -25);
@@ -364,6 +478,7 @@ function init() {
   const greenmaterial = new THREE.MeshLambertMaterial({
     color: 0xfd59d7
   });
+
 
   const xgreen = -0.5;
   const xred = 0.5;
