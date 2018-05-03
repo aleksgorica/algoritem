@@ -414,7 +414,7 @@ var loader = new THREE.FontLoader();
 
 loader.load( 'helvetiker_regular.typeface.json', function ( font ) {
 
-  var material = new THREE.MeshPhongMaterial( { color: 0x0033ff, specular: 0x555555, shininess: 30 } );
+  var material = new THREE.MeshNormalMaterial(  );
 
   var geometry_1 = new THREE.TextGeometry( 'MEN', {
         font: font,
@@ -441,9 +441,12 @@ loader.load( 'helvetiker_regular.typeface.json', function ( font ) {
   scene.add(mesh_1, mesh_2);
 
 var light1 = new THREE.PointLight( 0xffffff, 1, 10000 );
-light1.position.set( 10, 0, 25 );
+light1.position.set(10, 0, 25 );
 var light2 = new THREE.PointLight( 0xffffff, 1, 10000 );
-light1.position.set( -10, 0, -25 );
+light2.position.set( 10, 0, -25 );
+
+
+
 scene.add( light1 );
   scene.add( light2 );
 
@@ -466,7 +469,7 @@ animate();
   geometry = new THREE.SphereBufferGeometry(0.2, 32, 32);
   geometry.applyMatrix(new THREE.Matrix4().makeScale(1.0, 1.2, 2));
   const redmaterial = new THREE.MeshLambertMaterial({
-    color: 0x135fd8
+    color: 0x0d82e8
   });
   window.addEventListener('resize', function() {
     renderer.setSize(window.innerWidth * 0.66, window.innerHeight);
@@ -474,7 +477,7 @@ animate();
     camera.updateProjectionMatrix();
   });
   const greenmaterial = new THREE.MeshLambertMaterial({
-    color: 0x2194ce
+    color:0xe03202 
   });
 
 
