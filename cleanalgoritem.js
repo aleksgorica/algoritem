@@ -410,8 +410,6 @@ function init() {
   scene = new THREE.Scene();
   controls = new THREE.OrbitControls(camera);
 
-  var light1 = new THREE.PointLight(0xFFFF00);
-  var light2 = new THREE.PointLight(0xFFFF00);
 var loader = new THREE.FontLoader();
 
 loader.load( 'helvetiker_regular.typeface.json', function ( font ) {
@@ -467,7 +465,7 @@ animate();
   scene.add(light2);
   geometry = new THREE.SphereBufferGeometry(0.2, 32, 32);
   geometry.applyMatrix(new THREE.Matrix4().makeScale(1.0, 1.2, 2));
-  const redmaterial = new THREE.MeshNormalMaterial({
+  const redmaterial = new THREE.MeshLambertMaterial({
     color: 0x135fd8
   });
   window.addEventListener('resize', function() {
@@ -476,7 +474,7 @@ animate();
     camera.updateProjectionMatrix();
   });
   const greenmaterial = new THREE.MeshLambertMaterial({
-    color: 0xfd59d7
+    color: 0x2194ce
   });
 
 
