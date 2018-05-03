@@ -440,9 +440,13 @@ loader.load( 'helvetiker_regular.typeface.json', function ( font ) {
 
   scene.add(mesh_1, mesh_2);
 
-  var light = new THREE.DirectionalLight( 0xffffff );
-  light.position.set( 0, 1, 1 ).normalize();
-  scene.add(light);
+var light1 = new THREE.PointLight( 0xffffff, 1, 10000 );
+light1.position.set( 10, 0, 25 );
+var light2 = new THREE.PointLight( 0xffffff, 1, 10000 );
+light1.position.set( -10, 0, -25 );
+scene.add( light1 );
+  scene.add( light2 );
+
 
 
   var renderer = new THREE.WebGLRenderer();
@@ -459,10 +463,6 @@ loader.load( 'helvetiker_regular.typeface.json', function ( font ) {
 
 animate();
 } );
-  light1.position.set(10, 0, 25);
-  scene.add(light1);
-  light2.position.set(-10, 0, -25);
-  scene.add(light2);
   geometry = new THREE.SphereBufferGeometry(0.2, 32, 32);
   geometry.applyMatrix(new THREE.Matrix4().makeScale(1.0, 1.2, 2));
   const redmaterial = new THREE.MeshLambertMaterial({
