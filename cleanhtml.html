@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <script src="three.js"></script>
+  <script src="OrbitControls.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+  <style>
+    body {
+      margin: 0;
+      background-color: black;
+      color: white;
+      font-family: "Courier New", Monospace;
+      font-weight: bold;
+    }
+
+    canvas {
+      width: 66%;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      z-index: -1;
+    }
+
+    .blue {
+      color:DodgerBlue;
+    }
+    
+    .rdec {
+      color:tomato;
+    }
+
+    .inputs {
+      display: inline-block;
+      margin-top: 0;
+    }
+
+    #about {
+      position: fixed;
+      bottom: 1px;
+      background: #008CBA;
+      width: 100%;
+    }
+
+    table, th, td {
+    border: 1px solid white;
+    border-collapse: collapse;
+    text-align: center;
+}
+    input[type="button"] {
+      /* Green */
+      border: none;
+      font-weight: bold;
+      color: white;
+      padding: 15px 32px;
+      font-family: "Courier New", Monospace;
+      text-align: center;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+background-color: #008CBA;
+}      /* Gray */
+
+#logger {
+  display:none;
+  position: absolute;
+  right: 0;
+  width: 33%;
+  height: 100%;
+}
+  </style>
+</head>
+
+<body>
+  <label for="numpar">Število parov:</label>
+  <input type="number" class="inputs" id="numpar" value="100">
+  <label for="ratio">Razmerje:</label>
+  <input type="range" class="inputs" id="ratio" name="razmerje" min="0" max="100">
+  <span id="shratio" class="inputs"></span>
+  <input type="button" class="inputs" id="potrdi" value="POTRDI">
+  <!-- <input type="button" class="inputs" id="polpol" value="polpol"> -->
+  <input type="button" class="inputs" id="premešaj" value="PREMEŠAJ">
+  <input type="button" class="inputs" id="onfield" value="NA POLJE">
+  <input type="button" class="inputs" id="razporedi" value="RAZPOREDI">
+  <input type="button" class="inputs" id="tobox" value="V ŠKATLO">
+  <div id="besedilo">
+    <h1>RAZISKOVANJE MODELA GENOV</h1>
+    <h2>Kaj je model genov?</h2>
+<p>Kadar imamo v mislih vse gene, ki določajo neko lastnost v dani populaciji, govorimo o skladu genov. Polovica sklada genov je prisotna v vseh moških gametah, polovica pa v vseh ženskih gametah. Ti geni pridejo skupaj pri oploditvi. Tedaj nastanejo genski pari, ki določajo, kakšen bo osebek. Če določata to lastnost dva različna alela (npr. eden modro drugi rdečo barvo semen), so po oploditvi možne tri različne kombinacije genskih parov. Verjetnost neke kombinacije je v veliki meri odvisna od tega, v kolikšnem odstotku je zastopan en ali drugi alel v celotnem skladu genov.
+Da bi lažje razumeli, kako delujejo zakoni verjetnosti v živi populaciji, si bomo pomagali z modelom. Gene bodo nadomeščala fižolova semena. Eno skupino alelov bodo predstavljala fižolova semena rdeča, drugo skupino pa fižolova semena modre barve. Iz teh semen bomo sestavljali različne kombinacije. Po dve in dve semeni bosta v našem modelu ponazarjali genski par za določeno lastnost.
+</p>
+<ul>
+  Legenda:
+  <li>RDRD - rdeče in rdeče</li>
+  <li>RDMD - rdeče in modro</li>
+  <li>MDMD - modro in modro</li>
+  <li>F - generacija</li>
+</ul>
+  <p>
+
+  Za vsako generacijo, ki jo izmerimo, vpišemo število parov kot rezultat pod F (število generacije). Ko izmerimo več generacij, jim lahko izračunamo povprečje ki ga zapišemo v zadnji stolpec. 
+Povprečje izračunamo po formuli:
+ $$ \% kombinacij = {\text{Število parov ene kombinacije} \over \text{Število parov več kombinacij}} * 100.$$
+Zanima nas tudi, kolikšna je matematična verjetnost, da bi iz obeh čaš potegnili dve določeni barvi semena, kar izračunamo po formuli:
+  $$ \text{verjetnost RR} = \text{delež rdečih}^2 $$
+  $$ verjetnost \text{ RM in MR} = 2 * \text{(delež rdečih)}*\text{(delež modrih)} $$
+  $$ \text{verjetnost MM}  = \text{delež modrih}^2 $$ 
+Formula nam tudi pove kolikšen delež določene kombinacije, bo na polju. <br> <hr>
+<span class="imp">HIPOTEZA:</span> Več generacij poskusa kot naredimo, bolj se približujemo matematičnemu izračunu. <br>  
+<span class="imp">PROBLEM: </span>izvajanje poskusa je zamudno, saj potrebujemo veliko časa vsaj 8 min, da izvedemo eno generacijo, lahko se zmotimo, da zamešamo fižole, zaradi česar moramo ponoviti eksperiment. <br> 
+<span class="imp">REŠITEV:</span> Da ne bi izvajal eksperimenta ročno, sem napisal program, ki je zmožen izvajati mnogo zaporednih simulacij poskusa v trenutku nezmotljivo, ter nam posreduje informacije o rezultatih. Omogočal bo tudi 3D vizualno predstavo.</p><hr>
+<h2>O Programu</h2>
+<p>Program je napisan v programskem jeziku za splet JavaScript. Program je javno dostopen kot spletna stran, zato imajo vsi dostop. Stran je sestavljena iz interaktivnega WebGL Canvasa, kjer se vizualno prikauje eksperiment, loggerja, ki beleži rezultate ter nadzornih gumbov, s katerimi vodimo experiment.</p>
+<h3>Navodila za uporabo</h3>
+<ol>
+    <li>V tekstovno okno vpišemo število parov</li>
+    <li>Nato nastavimo želeno razmerje med barvama</li>
+    <li>Ko kliknemo gumb "POTRDI" se scena na Canvasu postavi ter izpiše 
+      <ul>
+          <li>Št. rdečih fižolov</li> 
+          <li>Št. modrih fižolov</li>
+          <li>Št. vseh fižolov</li>
+          <li>Alel p - izraža rdečo lastnost</li>
+          <li>Alel q - izraža modro lastnost</li>
+          <li>Tabelo: prvi stolpec ponazarja kombinacijo Rdeč-Rdeč, drugi stolpec ponazarja kombinacijo Rdeč-Moder in Moder-Rdeč, tretji stolpec ponazarja kombinacijo Moder-Moder. V prvi vrstici tabele izvemo matematično pričakovan izid</li>
+      </ul>
+    </li>
+    <li>Gumb "PREMEŠAJ" - fižoli v škatli se naključno premešajo</li>
+    <li>Gumb "NA POLJE" - fižoli iz škatle se premaknejo na polje --> nastanejo kombinacije</li>
+    <li>Gumb "RAZPOREDI" - razporedi kombinacije na polju, najnižje je kombinacija RR, nato sledi kombinacija MM, nazadnje pa kombinacija RM in MR. V tabeli izpiše dejansko število kombinacij RR, MM, MR ter izračuna njihovo skupno povprečje</li>
+    <li>GUMB "V ŠKATLO" - premakne prva dva fižola iz polja (prvega moškega in prvo žensko) v škatlo_1, druga dva v škatlo_2, nato tretja dva v škatlo_1, četrta dva v škatlo_2 in tako dalje</li>
+</ol>
+<br>
+
+
+
+
+
+<!-- Do sedaj sem sprogramiral prehod fižolov med škatlami, njihovo naključno razporejanje in dodajanje fižolov preko text input fielda njihovega razmerja preko range inputa. Vsak fižol ima svoj index, zato ga lahko spremljamo, kako prehaja med poljem in škatlo, ter da se ne izgubi. Stran sem tudi vizualno uredil, zato sem moral poznati markup jezika HTML in CSS. Kodo hranim na programerski platformi GitHub, ki mi tudi omogoča gostovanje spletne strani, zato je javno vidna na https://aleksgorica.github.com/algoritem, kjer lahko spremljate moje delo. --> 
+
+  <div id="about">Izdelal: Aleks Stepančič,   Mentor: Pavel Bone,   Leto: 2018,   Šola: Gimnazija Nova Gorica</div>
+  </div>
+  <div id="logger"></div>
+  <script src="cleanalgoritem.js"></script>
+
+</body>
+
+</html>
