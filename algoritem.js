@@ -29,7 +29,7 @@ let generacija = 0;
 let ctx;
 
 //***************************************************************
-function preload(){
+function preload() {
   redbean = loadImage("redbean.png");
   greenbean = loadImage("greenbean.png");
 }
@@ -43,7 +43,7 @@ function setup() {
 
   $("#potrdi").click(function() {
     potrditev();
-    resizeCanvas(w, rx * celota.vnosParov*5/6);
+    resizeCanvas(w, rx * celota.vnosParov * 5 / 6);
 
   });
   $("#gumb").click(function() {
@@ -94,9 +94,9 @@ function Fizol(color, num) {
   this.newy;
   this.movex;
   this.movey;
-  this.update = function(){
-    this.movex = (this.newx - this.x)/10;
-    this.movey = (this.newy - this.y)/10;
+  this.update = function() {
+    this.movex = (this.newx - this.x) / 10;
+    this.movey = (this.newy - this.y) / 10;
     this.x += this.movex;
     this.y += this.movey;
   }
@@ -144,10 +144,8 @@ function razvrsti() {
   //  box02.push(box2[length]);
   //}
   box2.splice(0, box2.length);
-  box01.forEach(function(current) {
-  });
-  box02.forEach(function(currentb) {
-  });
+  box01.forEach(function(current) {});
+  box02.forEach(function(currentb) {});
 }
 
 function mix() {
@@ -160,8 +158,7 @@ function mix() {
 
   shuffleArray(box01);
   shuffleArray(box02);
-  box01.forEach(function(cur) {
-  });
+  box01.forEach(function(cur) {});
 }
 
 function onfield() {
@@ -170,6 +167,7 @@ function onfield() {
   box01 = [];
   box02 = [];
 }
+
 function razporedi() {
   let poljef = [
     [],
@@ -223,6 +221,7 @@ function tobox() {
 function display(whatone, whattwo, x1, x2) {
 
   let ry = rx / 3 * 2;
+
   function nic(whatone, x1) {
     let x = x1
     let y = 5;
@@ -238,15 +237,15 @@ function display(whatone, whattwo, x1, x2) {
       }
       if (whatone[i].color == "black") {
         fill(0, 0, 125);
-        image(greenbean, whatone[i].x, whatone[i].y,rx,ry);
+        image(greenbean, whatone[i].x, whatone[i].y, rx, ry);
         fill(255, 0, 0);
         text(whatone[i].num, whatone[i].x, whatone[i].y, 70, 80);
       }
       stroke(255);
 
-      line(0,y,width,y);
+      line(0, y, width, y);
       y = y + rx / 2 * 1.5;
-      if(y > height){       // Če nočeš da gre v novo vrsto zbriši ta if blok
+      if (y > height) { // Če nočeš da gre v novo vrsto zbriši ta if blok
         x = x + rx;
         y = 5;
       }
@@ -263,18 +262,18 @@ function display(whatone, whattwo, x1, x2) {
       whattwo[i].update();
       if (whattwo[i].color == "white") {
         fill(255);
-        image(redbean,whattwo[i].x-rx,whattwo[i].y,rx,ry);
+        image(redbean, whattwo[i].x - rx, whattwo[i].y, rx, ry);
         fill(255, 0, 0);
         text(whattwo[i].num, whattwo[i].x, whattwo[i].y, 70, 80);
       }
       if (whattwo[i].color == "black") {
         fill(0, 0, 125);
-        image(greenbean,whattwo[i].x-rx,whattwo[i].y,rx,ry);
+        image(greenbean, whattwo[i].x - rx, whattwo[i].y, rx, ry);
         fill(255, 0, 0);
         text(whattwo[i].num, whattwo[i].x, whattwo[i].y, 70, 80);
       }
-      y = y + rx/2 * 1.5;
-      if(y > height){       // Če nočeš da gre v novo vrsto zbriši ta if blok
+      y = y + rx / 2 * 1.5;
+      if (y > height) { // Če nočeš da gre v novo vrsto zbriši ta if blok
         x = x - rx;
         y = 5;
       }
@@ -311,13 +310,20 @@ function potrditev() {
   start();
   box01 = []; //Resetiramo, tako da odstranimo vse array-je
   box02 = [];
-  box01a = [];[[],[]];
+  box01a = [];
+  [
+    [],
+    []
+  ];
   box02a = [];
-  polje = [[],[]];
+  polje = [
+    [],
+    []
+  ];
   logiraj();
 }
 
-function logiraj(){
+function logiraj() {
   $(".spodnji").html(`<span>Število rdečih:</span> ${round(2*(celota.vnosParov/100 * celota.vnosBelih))}
  <br>
   <span>Število zelenih:</span> ${round(2*(celota.vnosParov/100 * celota.vnosČrnih))}
@@ -337,16 +343,16 @@ function logiraj(){
   `);
 }
 
-function vrniSteviloKombinacij(){
+function vrniSteviloKombinacij() {
   let rdrd = 0;
   let rdzl = 0;
   let zlzl = 0;
-  for(let i = 0; i < polje[0].length; i++){
+  for (let i = 0; i < polje[0].length; i++) {
     console.log(polje[0][i].color == polje[1][i].color && polje[0].color == "black");
-    if(polje[0][i].color == polje[1][i].color && polje[0][i].color == "white"){
+    if (polje[0][i].color == polje[1][i].color && polje[0][i].color == "white") {
       rdrd += 1;
 
-    } else if(polje[0][i].color == polje[1][i].color && polje[0][i].color == "black"){
+    } else if (polje[0][i].color == polje[1][i].color && polje[0][i].color == "black") {
       zlzl += 1;
     } else {
       rdzl += 1;
